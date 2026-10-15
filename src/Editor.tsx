@@ -1,17 +1,83 @@
-import { useState, type CSSProperties } from 'react'
-import { Eye, UserRound, Link, BriefcaseBusiness } from 'lucide-react'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { Eye, UserRound, Link, BriefcaseBusiness, Check } from 'lucide-react'
 import './Editor.css'
 
 const colors = ['#a78bfa', '#7dd3fc', '#86efac', '#fda4af', '#fcd34d']
+const STORAGE_KEY = 'persona-profile'
+
+type Profile = {
+  name: string
+  profession: string
+  description: string
+  email: string
+  color: string
+}
+
+const defaultProfile: Profile = {
+  name: 'Alex Morgan',
+  profession: 'Designer & Creator',
+  description: 'Создаю красивые вещи и превращаю идеи в реальные проекты.',
+  email: 'hello@example.com',
+  color: colors[0],
+}
+
+function loadProfile(): Profile {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+
+    if (saved) {
+      const parsed = JSON.parse(saved) as Partial<Profile>
+
+      return {
+        name: typeof parsed.name === 'string' ? parsed.name : defaultProfile.name,
+        profession:
+          typeof parsed.profession === 'string'
+            ? parsed.profession
+            : defaultProfile.profession,
+        description:
+          typeof parsed.description === 'string'
+            ? parsed.description
+            : defaultProfile.description,
+        email:
+          typeof parsed.email === 'string' ? parsed.email : defaultProfile.email,
+        color:
+          typeof parsed.color === 'string' && colors.includes(parsed.color)
+            ? parsed.color
+            : defaultProfile.color,
+      }
+    }
+  } catch {
+    // Если сохранённые данные повреждены, используем профиль по умолчанию.
+  }
+
+  return defaultProfile
+}
 
 export default function Editor() {
-  const [name, setName] = useState('Alex Morgan')
-  const [profession, setProfession] = useState('Designer & Creator')
-  const [description, setDescription] = useState(
-    'Создаю красивые вещи и превращаю идеи в реальные проекты.',
-  )
-  const [email, setEmail] = useState('hello@example.com')
-  const [color, setColor] = useState(colors[0])
+  const [profile, setProfile] = useState<Profile>(loadProfile)
+  const [saved, setSaved] = useState(true)
+
+  useEffect(() => {
+    setSaved(false)
+
+    const timer = window.setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
+        setSaved(true)
+      } catch {
+        setSaved(false)
+      }
+    }, 400)
+
+    return () => window.clearTimeout(timer)
+  }, [profile])
+
+  function updateProfile<K extends keyof Profile>(
+    key: K,
+    value: Profile[K],
+  ) {
+    setProfile((current) => ({ ...current, [key]: value }))
+  }
 
   return (
     <main className="editor-page">
@@ -19,7 +85,16 @@ export default function Editor() {
         <a className="editor-logo" href="./">
           persona<span>.</span>
         </a>
-        <span className="editor-status">EDITOR</span>
+
+        <span className="editor-status">
+          {saved ? (
+            <>
+              <Check size={13} /> Сохранено
+            </>
+          ) : (
+            'Сохраняем...'
+          )}
+        </span>
       </header>
 
       <div className="editor-layout">
@@ -32,12 +107,11 @@ export default function Editor() {
 
           <label className="editor-label">
             <span>
-              <UserRound size={17} />
-              Имя
+              <UserRound size={17} /> Имя
             </span>
             <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+              value={profile.name}
+              onChange={(event) => updateProfile('name', event.target.value)}
               placeholder="Твоё имя"
               maxLength={80}
             />
@@ -45,12 +119,13 @@ export default function Editor() {
 
           <label className="editor-label">
             <span>
-              <BriefcaseBusiness size={17} />
-              Профессия
+              <BriefcaseBusiness size={17} /> Профессия
             </span>
             <input
-              value={profession}
-              onChange={(event) => setProfession(event.target.value)}
+              value={profile.profession}
+              onChange={(event) =>
+                updateProfile('profession', event.target.value)
+              }
               placeholder="Например, дизайнер"
               maxLength={100}
             />
@@ -59,8 +134,10 @@ export default function Editor() {
           <label className="editor-label">
             <span>О себе</span>
             <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
+              value={profile.description}
+              onChange={(event) =>
+                updateProfile('description', event.target.value)
+              }
               placeholder="Расскажи о себе..."
               rows={4}
               maxLength={600}
@@ -69,13 +146,12 @@ export default function Editor() {
 
           <label className="editor-label">
             <span>
-              <Link size={17} />
-              Электронная почта
+              <Link size={17} /> Электронная почта
             </span>
             <input
               type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              value={profile.email}
+              onChange={(event) => updateProfile('email', event.target.value)}
               placeholder="you@example.com"
               maxLength={254}
             />
@@ -83,16 +159,17 @@ export default function Editor() {
 
           <div className="editor-label">
             <span>Цвет оформления</span>
+
             <div className="color-options">
               {colors.map((item) => (
                 <button
                   key={item}
                   type="button"
-                  className={`color-option ${color === item ? 'selected' : ''}`}
+                  className={`color-option ${profile.color === item ? 'selected' : ''}`}
                   style={{ backgroundColor: item }}
                   aria-label={`Выбрать цвет ${item}`}
-                  aria-pressed={color === item}
-                  onClick={() => setColor(item)}
+                  aria-pressed={profile.color === item}
+                  onClick={() => updateProfile('color', item)}
                 />
               ))}
             </div>
@@ -102,38 +179,36 @@ export default function Editor() {
         <section className="preview-panel">
           <div className="preview-heading">
             <span>
-              <Eye size={17} />
-              Предпросмотр
+              <Eye size={17} /> Предпросмотр
             </span>
             <span className="live-badge">LIVE</span>
           </div>
 
           <article
             className="identity-card"
-            style={{ '--accent': color } as CSSProperties}
+            style={{ '--accent': profile.color } as CSSProperties}
           >
             <div className="identity-avatar" aria-hidden="true">
-              {name.trim().charAt(0).toUpperCase() || '?'}
+              {profile.name.trim().charAt(0).toUpperCase() || '?'}
             </div>
 
             <span className="identity-tag">PERSONAL PROFILE</span>
-
-            <h2>{name || 'Твоё имя'}</h2>
+            <h2>{profile.name || 'Твоё имя'}</h2>
 
             <p className="identity-profession">
-              {profession || 'Твоя профессия'}
+              {profile.profession || 'Твоя профессия'}
             </p>
 
             <div className="identity-divider" />
 
             <p className="identity-description">
-              {description || 'Здесь появится твой рассказ о себе.'}
+              {profile.description || 'Здесь появится твой рассказ о себе.'}
             </p>
 
-            {email.trim() && (
+            {profile.email.trim() && (
               <a
                 className="identity-contact"
-                href={`mailto:${email.trim()}`}
+                href={`mailto:${profile.email.trim()}`}
               >
                 Связаться со мной ↗
               </a>
@@ -143,8 +218,8 @@ export default function Editor() {
           </article>
 
           <p className="preview-hint">
-            Меняй данные слева — визитка обновляется автоматически.
-          </p>
+            Изменения сохраняются на этом устройстве автоматически.
+        </p>
         </section>
       </div>
     </main>
