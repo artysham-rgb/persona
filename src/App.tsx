@@ -7,273 +7,370 @@ import {
   Sparkles,
   X,
 } from 'lucide-react'
+import Editor from './Editor'
+import './App.css'
+
+const templates = [
+  {
+    name: 'Executive',
+    description: 'Сдержанный стиль для профессионалов.',
+    color: '#b8a1ff',
+    number: '01',
+  },
+  {
+    name: 'Minimal',
+    description: 'Ничего лишнего. Только самое важное.',
+    color: '#b8e0d2',
+    number: '02',
+  },
+  {
+    name: 'Creative',
+    description: 'Для тех, кто любит выделяться.',
+    color: '#ffb4a2',
+    number: '03',
+  },
+  {
+    name: 'Editorial',
+    description: 'Эстетика журнальных публикаций.',
+    color: '#f2d388',
+    number: '04',
+  },
+]
 
 const features = [
   {
     number: '01',
-    title: 'Your story, your style.',
+    title: 'Твой стиль',
     description:
-      'Create a personal website that reflects your personality, career and ambitions.',
+      'Выбери шаблон и настрой цвета, чтобы сайт отражал твою индивидуальность.',
   },
   {
     number: '02',
-    title: 'Designed to stand out.',
+    title: 'Всё в одном месте',
     description:
-      'Choose an elegant template and make it yours with custom colors and typography.',
+      'Собери информацию о себе, ссылки, проекты и контакты на одной странице.',
   },
   {
     number: '03',
-    title: 'Everything in one place.',
+    title: 'Твоя визитка',
     description:
-      'Bring your experience, achievements and social links together in one beautiful profile.',
+      'Подготовь персональную страницу, которой можно будет поделиться.',
   },
 ]
 
-const templates = [
-  { name: 'Executive', type: 'Professional', color: '#d8c4a2' },
-  { name: 'Minimal', type: 'Clean & simple', color: '#c5d2c2' },
-  { name: 'Creative', type: 'Bold & expressive', color: '#c4b5fd' },
-  { name: 'Editorial', type: 'Elegant & timeless', color: '#e8b9a8' },
-]
-
-export default function App() {
+function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [editorOpen, setEditorOpen] = useState(false)
 
-  const startCreating = () => {
-    document.getElementById('templates')?.scrollIntoView({
-      behavior: 'smooth',
-    })
+  const openEditor = () => {
+    setMenuOpen(false)
+    setEditorOpen(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  if (editorOpen) {
+    return <Editor />
   }
 
   return (
-    <main>
-      <header className="navbar">
-        <a className="brand" href="#" aria-label="Persona home">
-          <span className="brand-mark">P.</span>
+    <div className="app-shell">
+      <header className="site-header">
+        <a className="brand" href="#home">
+          <span className="brand-icon">
+            <Sparkles size={19} />
+          </span>
           <span>persona</span>
+          <span className="brand-dot">.</span>
         </a>
-
-        <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
-          <a href="#features" onClick={() => setMenuOpen(false)}>
-            Features
-          </a>
-          <a href="#templates" onClick={() => setMenuOpen(false)}>
-            Templates
-          </a>
-          <button className="nav-cta" onClick={startCreating}>
-            Get started <ArrowRight size={15} />
-          </button>
-        </nav>
 
         <button
           className="menu-toggle"
+          type="button"
+          aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
+          aria-expanded={menuOpen}
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         >
-          {menuOpen ? <X /> : <Menu />}
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
+
+        <nav className={`nav-links ${menuOpen ? 'nav-open' : ''}`}>
+          <a href="#features" onClick={() => setMenuOpen(false)}>
+            Возможности
+          </a>
+
+          <a href="#templates" onClick={() => setMenuOpen(false)}>
+            Шаблоны
+          </a>
+
+          <a href="#about" onClick={() => setMenuOpen(false)}>
+            О проекте
+          </a>
+
+          <a
+            className="nav-cta"
+            href="#create"
+            onClick={(event) => {
+              event.preventDefault()
+              openEditor()
+            }}
+          >
+            Создать визитку <ArrowRight size={16} />
+          </a>
+        </nav>
       </header>
 
-      <section className="hero">
-        <div className="hero-glow" />
+      <main>
+        <section className="hero section-container" id="home">
+          <div className="hero-content">
+            <div className="eyebrow">
+              <span className="status-dot" />
+              ТВОЯ ЦИФРОВАЯ ИДЕНТИЧНОСТЬ
+            </div>
 
-        <div className="hero-content">
-          <div className="eyebrow">
-            <Sparkles size={14} />
-            <span>YOUR IDENTITY, REIMAGINED</span>
+            <h1>
+              Интернет.
+              <br />
+              <span className="gradient-text">Это ты.</span>
+            </h1>
+
+            <p className="hero-description">
+              Создай персональный сайт, который расскажет о тебе
+              больше, чем обычное резюме. Твой стиль, твои правила.
+            </p>
+
+            <div className="hero-actions">
+              <a
+                className="button-primary"
+                href="#create"
+                onClick={(event) => {
+                  event.preventDefault()
+                  openEditor()
+                }}
+              >
+                Создать свою визитку <ArrowRight size={18} />
+              </a>
+
+              <a className="button-secondary" href="#features">
+                Узнать больше <ArrowDown size={17} />
+              </a>
+            </div>
+
+            <div className="hero-note">
+              <span className="check-icon">
+                <Check size={14} />
+              </span>
+              Просто. Стильно. По-твоему.
+            </div>
           </div>
 
-          <h1>
-            Make your
-            <br />
-            <span>presence</span> personal.
-          </h1>
+          <div
+            className="hero-visual"
+            aria-label="Пример персонального сайта"
+          >
+            <div className="orbit orbit-one" />
+            <div className="orbit orbit-two" />
 
-          <p className="hero-description">
-            A personal website that feels like you.
-            Showcase your story, your work and everything
-            that makes you different.
+            <div className="profile-card">
+              <div className="profile-card-top">
+                <span className="window-dots">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span className="preview-label">LIVE PREVIEW</span>
+              </div>
+
+              <div className="profile-avatar">Y</div>
+
+              <span className="profile-tag">CREATIVE MIND</span>
+              <h2>Your Name.</h2>
+
+              <p className="profile-description">
+                Designer, creator & curious human.
+              </p>
+
+              <div className="profile-divider" />
+
+              <div className="profile-links">
+                <span>Portfolio</span>
+                <ArrowRight size={16} />
+              </div>
+
+              <div className="profile-links">
+                <span>About me</span>
+                <ArrowRight size={16} />
+              </div>
+
+              <div className="profile-footer">
+                <span className="status-dot" />
+                AVAILABLE FOR NEW IDEAS
+              </div>
+            </div>
+
+            <div className="floating-badge badge-top">
+              <Sparkles size={16} />
+              <span>Made by you</span>
+            </div>
+
+            <div className="floating-badge badge-bottom">
+              <span className="badge-color" />
+              <span>Your identity</span>
+            </div>
+          </div>
+        </section>
+
+        <section
+          className="features-section section-container"
+          id="features"
+        >
+          <div className="section-heading">
+            <span className="section-kicker">ПОЧЕМУ PERSONA</span>
+
+            <h2>
+              Меньше сложностей.
+              <br />
+              <span className="muted-text">Больше тебя.</span>
+            </h2>
+          </div>
+
+          <div className="features-grid">
+            {features.map((feature) => (
+              <article className="feature-card" key={feature.number}>
+                <span className="feature-number">{feature.number}</span>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+                <ArrowRight className="feature-arrow" size={19} />
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="templates-section section-container"
+          id="templates"
+        >
+          <div className="templates-heading">
+            <div className="section-heading">
+              <span className="section-kicker">
+                КОЛЛЕКЦИЯ ШАБЛОНОВ
+              </span>
+
+              <h2>
+                Какой сегодня
+                <br />
+                <span className="muted-text">будешь ты?</span>
+              </h2>
+            </div>
+
+            <p>
+              Четыре направления. Бесконечно много возможностей
+              выразить себя.
+            </p>
+          </div>
+
+          <div className="templates-grid">
+            {templates.map((template) => (
+              <article
+                className="template-card"
+                key={template.name}
+                style={
+                  {
+                    '--template-accent': template.color,
+                  } as import('react').CSSProperties
+                }
+              >
+                <div
+                  className={`template-preview preview-${template.name.toLowerCase()}`}
+                >
+                  <span className="template-number">
+                    {template.number}
+                  </span>
+
+                  <div className="template-art">
+                    <span className="template-art-line" />
+                    <span className="template-art-circle" />
+                    <span className="template-art-block" />
+                  </div>
+
+                  <span className="template-preview-title">
+                    {template.name}
+                  </span>
+                </div>
+
+                <div className="template-info">
+                  <div>
+                    <h3>{template.name}</h3>
+                    <p>{template.description}</p>
+                  </div>
+
+                  <button
+                    className="template-arrow"
+                    type="button"
+                    aria-label={`Создать визитку в стиле ${template.name}`}
+                    onClick={openEditor}
+                  >
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <p className="templates-note">
+            Сейчас доступен базовый редактор. Дополнительные шаблоны
+            подключим следующим этапом.
           </p>
+        </section>
 
-          <div className="hero-actions">
-            <button className="primary-button" onClick={startCreating}>
-              Create your website <ArrowRight size={17} />
-            </button>
+        <section
+          className="closing-section section-container"
+          id="about"
+        >
+          <div className="closing-card">
+            <div className="closing-glow" />
 
-            <a className="secondary-button" href="#features">
-              Explore Persona <ArrowDown size={16} />
+            <span className="section-kicker">
+              ТВОЯ ИСТОРИЯ НАЧИНАЕТСЯ ЗДЕСЬ
+            </span>
+
+            <h2>
+              Мир должен
+              <br />
+              увидеть <span className="gradient-text">тебя.</span>
+            </h2>
+
+            <p>
+              Создай пространство, которое будет только твоим.
+            </p>
+
+            <a
+              className="button-primary"
+              href="#create"
+              onClick={(event) => {
+                event.preventDefault()
+                openEditor()
+              }}
+            >
+              Создать визитку <ArrowRight size={18} />
             </a>
           </div>
+        </section>
+      </main>
 
-          <div className="hero-note">
-            <span className="status-dot" />
-            YOUR STORY DESERVES A SPACE OF ITS OWN
-          </div>
-        </div>
-
-        <div className="profile-scene">
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-
-          <div className="profile-card">
-            <div className="card-top">
-              <span>PERSONA / 001</span>
-              <span className="card-status">AVAILABLE FOR WORK</span>
-            </div>
-
-            <div className="portrait">
-              <div className="portrait-shape">
-                <span>J</span>
-              </div>
-              <div className="portrait-label">CREATIVE PROFILE</div>
-            </div>
-
-            <div className="profile-info">
-              <span className="profile-role">DESIGNER & STORYTELLER</span>
-              <h2>James Morgan<span>.</span></h2>
-              <p>Creating thoughtful digital experiences.</p>
-            </div>
-
-            <div className="card-bottom">
-              <span>NEW YORK · USA</span>
-              <span className="card-arrow">
-                <ArrowRight size={17} />
-              </span>
-            </div>
-          </div>
-
-          <div className="floating-tag tag-top">
-            <span className="tag-icon"><Check size={15} /></span>
-            YOUR PERSONAL BRAND
-          </div>
-
-          <div className="floating-tag tag-bottom">
-            <span className="tag-star">✳</span>
-            Made to be remembered.
-          </div>
-        </div>
-
-        <div className="hero-footer">
-          <span>SCROLL TO DISCOVER</span>
-          <span>01 — 04</span>
-        </div>
-      </section>
-
-      <section className="intro-section" id="features">
-        <div className="section-label">A NEW KIND OF PERSONAL WEBSITE</div>
-
-        <div className="intro-heading">
-          <h2>
-            Not another profile.
-            <br />
-            <span>A little more you.</span>
-          </h2>
-          <p>
-            Your experience is more than a list of achievements.
-            Persona helps you turn your story into a thoughtful
-            digital experience that people remember.
-          </p>
-        </div>
-
-        <div className="feature-grid">
-          {features.map((feature) => (
-            <article className="feature-card" key={feature.number}>
-              <span className="feature-number">{feature.number}</span>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-              <span className="feature-line" />
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="templates-section" id="templates">
-        <div className="section-label">FIND YOUR EXPRESSION</div>
-
-        <div className="templates-heading">
-          <h2>
-            Four styles.
-            <br />
-            <span>One identity.</span>
-          </h2>
-          <p>
-            Different aesthetics. The same idea:
-            making your online presence feel unmistakably yours.
-          </p>
-        </div>
-
-        <div className="template-grid">
-          {templates.map((template, index) => (
-            <article className="template-card" key={template.name}>
-              <div
-                className={`template-preview preview-${index + 1}`}
-                style={{ '--template-accent': template.color } as React.CSSProperties}
-              >
-                <div className="preview-top">
-                  <span>PERSONA</span>
-                  <span>0{index + 1}</span>
-                </div>
-
-                <div className="preview-content">
-                  <span>{template.type.toUpperCase()}</span>
-                  <div className="preview-name">
-                    {index === 0 && 'Alexandra\nMorgan.'}
-                    {index === 1 && 'Alexandra\nMorgan'}
-                    {index === 2 && 'Hello,\nI’m Alex.'}
-                    {index === 3 && 'The art of\nbeing you.'}
-                  </div>
-                  <div className="preview-line" />
-                </div>
-
-                <div className="preview-bottom">
-                  <span>PERSONAL PORTFOLIO</span>
-                  <ArrowRight size={15} />
-                </div>
-              </div>
-
-              <div className="template-meta">
-                <div>
-                  <h3>{template.name}</h3>
-                  <p>{template.type}</p>
-                </div>
-                <span className="template-index">0{index + 1}</span>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="template-note">
-          <Sparkles size={16} />
-          More than a template. A space to tell your story.
-        </div>
-      </section>
-
-      <section className="closing-section">
-        <div className="closing-glow" />
-        <span className="section-label">YOUR NEXT CHAPTER STARTS HERE</span>
-        <h2>
-          The world should
-          <br />
-          <span>know your name.</span>
-        </h2>
-        <p>
-          Build a space that tells your story.
-          Make it personal. Make it Persona.
-        </p>
-        <button className="primary-button" onClick={startCreating}>
-          Find your style <ArrowRight size={17} />
-        </button>
-        <span className="closing-mark">P.</span>
-      </section>
-
-      <footer className="footer">
-        <a className="brand" href="#">
-          <span className="brand-mark">P.</span>
+      <footer className="site-footer">
+        <a className="brand footer-brand" href="#home">
+          <span className="brand-icon">
+            <Sparkles size={17} />
+          </span>
           <span>persona</span>
+          <span className="brand-dot">.</span>
         </a>
-        <span>YOUR IDENTITY, BEAUTIFULLY EXPRESSED.</span>
-        <span>© 2026 PERSONA</span>
+
+        <p>Твоя личность. Твоё пространство.</p>
+        <span className="footer-year">© 2026 PERSONA</span>
       </footer>
-    </main>
+    </div>
   )
 }
+
+export default App
