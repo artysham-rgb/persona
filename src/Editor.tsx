@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { Eye, UserRound, Link, BriefcaseBusiness } from 'lucide-react'
 import './Editor.css'
+
+const colors = ['#a78bfa', '#7dd3fc', '#86efac', '#fda4af', '#fcd34d']
 
 export default function Editor() {
   const [name, setName] = useState('Alex Morgan')
@@ -9,15 +11,14 @@ export default function Editor() {
     'Создаю красивые вещи и превращаю идеи в реальные проекты.',
   )
   const [email, setEmail] = useState('hello@example.com')
-  const [color, setColor] = useState('#a78bfa')
+  const [color, setColor] = useState(colors[0])
 
   return (
     <main className="editor-page">
       <header className="editor-header">
-        <a className="editor-logo" href="/">
+        <a className="editor-logo" href="./">
           persona<span>.</span>
         </a>
-
         <span className="editor-status">EDITOR</span>
       </header>
 
@@ -31,23 +32,27 @@ export default function Editor() {
 
           <label className="editor-label">
             <span>
-              <UserRound size={17} /> Имя
+              <UserRound size={17} />
+              Имя
             </span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Твоё имя"
+              maxLength={80}
             />
           </label>
 
           <label className="editor-label">
             <span>
-              <BriefcaseBusiness size={17} /> Профессия
+              <BriefcaseBusiness size={17} />
+              Профессия
             </span>
             <input
               value={profession}
               onChange={(event) => setProfession(event.target.value)}
               placeholder="Например, дизайнер"
+              maxLength={100}
             />
           </label>
 
@@ -58,38 +63,38 @@ export default function Editor() {
               onChange={(event) => setDescription(event.target.value)}
               placeholder="Расскажи о себе..."
               rows={4}
+              maxLength={600}
             />
           </label>
 
           <label className="editor-label">
             <span>
-              <Link size={17} /> Электронная почта
+              <Link size={17} />
+              Электронная почта
             </span>
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
+              maxLength={254}
             />
           </label>
 
           <div className="editor-label">
             <span>Цвет оформления</span>
-
             <div className="color-options">
-              {['#a78bfa', '#7dd3fc', '#86efac', '#fda4af', '#fcd34d'].map(
-                (item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={`color-option ${color === item ? 'selected' : ''}`}
-                    style={{ backgroundColor: item }}
-                    aria-label={`Выбрать цвет ${item}`}
-                    aria-pressed={color === item}
-                    onClick={() => setColor(item)}
-                  />
-                ),
-              )}
+              {colors.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={`color-option ${color === item ? 'selected' : ''}`}
+                  style={{ backgroundColor: item }}
+                  aria-label={`Выбрать цвет ${item}`}
+                  aria-pressed={color === item}
+                  onClick={() => setColor(item)}
+                />
+              ))}
             </div>
           </div>
         </section>
@@ -97,12 +102,16 @@ export default function Editor() {
         <section className="preview-panel">
           <div className="preview-heading">
             <span>
-              <Eye size={17} /> Предпросмотр
+              <Eye size={17} />
+              Предпросмотр
             </span>
             <span className="live-badge">LIVE</span>
           </div>
 
-          <article className="identity-card" style={{ '--accent': color } as React.CSSProperties}>
+          <article
+            className="identity-card"
+            style={{ '--accent': color } as CSSProperties}
+          >
             <div className="identity-avatar" aria-hidden="true">
               {name.trim().charAt(0).toUpperCase() || '?'}
             </div>
@@ -121,8 +130,11 @@ export default function Editor() {
               {description || 'Здесь появится твой рассказ о себе.'}
             </p>
 
-            {email && (
-              <a className="identity-contact" href={`mailto:${email}`}>
+            {email.trim() && (
+              <a
+                className="identity-contact"
+                href={`mailto:${email.trim()}`}
+              >
                 Связаться со мной ↗
               </a>
             )}
@@ -131,7 +143,7 @@ export default function Editor() {
           </article>
 
           <p className="preview-hint">
-            Изменяй данные слева — визитка обновляется автоматически.
+            Меняй данные слева — визитка обновляется автоматически.
           </p>
         </section>
       </div>
